@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+
+	<style>
+		body{
+			position:relative;
+
+		}
+		div {
+			position:absolute;
+			top:50px;
+			left:41px;
+			width:100px;
+			height:100px;
+			line-height:100px;
+			text-align: center;
+			color:#fff;
+			background:blue;
+			cursor:move;
+		}
+	</style>
+</head>
+<body>
+	
+
+	<div>drag me</div>
+
+
+	<script src="rx.all.js"></script>
+	<script>
+		/* Case specific start */
+		var dragTarget = document.getElementsByTagName('div')[0];
+        var styles = window.getComputedStyle(dragTarget);
+        dragTarget.style.left=parseFloat(styles.left)+'px';
+        dragTarget.style.top=parseFloat(styles.top)+'px';
+        var offset={x:0,y:0}; 
+        /* Case specific end */
+
+
+        var mouseups = Rx.Observable.fromEvent(document, 'mouseup');
+        var mousemoves = Rx.Observable.fromEvent(document, 'mousemove');
+        var mousedowns = Rx.Observable.fromEvent(dragTarget, 'mousedown');
+
+
+
+
+        mousedowns
+	        .map(function(mousedown) {
+	        	/* update offset based on mousedown- and dragTarget-positions */
+	        	offset = {
+	        		x:parseFloat(mousedown.x)-parseFloat(dragTarget.style.left),
+	        		y:parseFloat(mousedown.y)-parseFloat(dragTarget.style.top)
+	        	}
+	        	return mousemoves.takeUntil(mouseups)
+	        })
+	        .concatAll()
+	        .filter(function(each) {
+	        	return each.x>0 && each.y>0 && each.x<window.innerWidth && each.y<window.innerHeight;
+	        })
+	        .forEach(function(mousemove){
+	        	/* update dragtargets position from the mousemoves and offset */
+		   		dragTarget.style.left=mousemove.x-offset.x+'px';
+		   		dragTarget.style.top=mousemove.y-offset.y+'px';
+		   	});
+
+
+
+
+
+	    /* Notes 
+				
+			.map to manipulate each incomming
+			.takeUntill to end the observable
+			.concatAll to flatten a multidimensional array
+			.filter to only let some incoming pass through
+			.forEach to do something on each incoming
+
+
+
+
+	    */
+
+
+
+
+	</script>
+</body>
+</html>
