@@ -31,13 +31,13 @@
 
 	<script src="rx.all.js"></script>
 	<script>
-		/* Case specific start */
+		/* Example specific start */
 		var dragTarget = document.getElementsByTagName('div')[0];
         var styles = window.getComputedStyle(dragTarget);
         dragTarget.style.left=parseFloat(styles.left)+'px';
         dragTarget.style.top=parseFloat(styles.top)+'px';
         var offset={x:0,y:0}; 
-        /* Case specific end */
+        /* example specific end */
 
 
         var mouseups = Rx.Observable.fromEvent(document, 'mouseup');
@@ -45,11 +45,9 @@
         var mousedowns = Rx.Observable.fromEvent(dragTarget, 'mousedown');
 
 
-
-
         mousedowns
 	        .map(function(mousedown) {
-	        	/* update offset based on mousedown- and dragTarget-positions */
+	        	/* example-specific: update offset based on mousedown- and dragTarget-positions */
 	        	offset = {
 	        		x:parseFloat(mousedown.x)-parseFloat(dragTarget.style.left),
 	        		y:parseFloat(mousedown.y)-parseFloat(dragTarget.style.top)
@@ -58,6 +56,7 @@
 	        })
 	        .concatAll()
 	        .filter(function(each) {
+	        	/* only let mousemoves inside the screen get through */
 	        	return each.x>0 && each.y>0 && each.x<window.innerWidth && each.y<window.innerHeight;
 	        })
 	        .forEach(function(mousemove){
@@ -68,8 +67,6 @@
 
 
 
-
-
 	    /* Notes 
 				
 			.map to manipulate each incomming
@@ -77,9 +74,6 @@
 			.concatAll to flatten a multidimensional array
 			.filter to only let some incoming pass through
 			.forEach to do something on each incoming
-
-
-
 
 	    */
 
